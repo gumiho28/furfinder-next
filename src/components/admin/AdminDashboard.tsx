@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { supabase } from '@/lib/supabase';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
 import { Doughnut, Bar } from 'react-chartjs-2';
 import styles from './admin.module.css';
@@ -21,6 +22,51 @@ export default function AdminDashboard({
   const [lostPets, setLostPets] = useState(initialLostPets);
   const [shelters, setShelters] = useState(initialShelters);
   const [donations, setDonations] = useState(initialDonations);
+  
+  const [isAddPetOpen, setIsAddPetOpen] = useState(false);
+  const [newPet, setNewPet] = useState({ name: '', breed: '', type: 'dog', age: '', sickness: '', image_url: '', status: 'available' });
+  const [petImageFile, setPetImageFile] = useState<File | null>(null);
+
+  const handleAddPet = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      let finalImageUrl = newPet.image_url || '';
+      if (petImageFile) {
+        const fileName = `public/pet_${Date.now()}_${petImageFile.name}`;
+        const { error: uploadError } = await supabase.storage.from('uploads').upload(fileName, petImageFile);
+        if (!uploadError) {
+          finalImageUrl = supabase.storage.from('uploads').getPublicUrl(fileName).data.publicUrl;
+        }
+      }
+      
+      const { data, error } = await supabase.from('pets').insert([{ ...newPet, image_url: finalImageUrl }]).select();
+      if (!error && data) {
+        setPets([data[0], ...pets]);
+        setIsAddPetOpen(false);
+        setNewPet({ name: '', breed: '', type: 'dog', age: '', sickness: '', image_url: '', status: 'available' });
+        setPetImageFile(null);
+      } else {
+        alert("Failed to add pet");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleUpdateLostPetStatus = async (id: number, newStatus: string) => {
+    const { error } = await supabase.from('lost_pets').update({ status: newStatus }).eq('id', id);
+    if (!error) {
+      setLostPets(lostPets.map((p: any) => p.id === id ? { ...p, status: newStatus } : p));
+    }
+  };
+
+  const handleToggleShelterStatus = async (id: number, currentStatus: string) => {
+    const newStatus = currentStatus === 'Open' ? 'Closed' : 'Open';
+    const { error } = await supabase.from('shelters').update({ status: newStatus }).eq('id', id);
+    if (!error) {
+      setShelters(shelters.map((s: any) => s.id === id ? { ...s, status: newStatus } : s));
+    }
+  };
   
   // Predictor State
   const [predAge, setPredAge] = useState('');
@@ -121,7 +167,32 @@ export default function AdminDashboard({
         </div>
 
         <div className={`${styles.section} ${activeSection === 'manage-pets' ? styles.active : ''}`}>
-          <h3>Current Adoptable Pets</h3>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+            <h3 style={{ margin: 0 }}>Current Adoptable Pets</h3>
+            <button onClick={() => setIsAddPetOpen(true)} className={styles.btnPrimary} style={{ width: 'auto', margin: 0, padding: '8px 15px' }}>+ Add New Pet</button>
+          </div>
+          
+          {isAddPetOpen && (
+            <div style={{ background: '#f8f9fa', padding: '20px', borderRadius: '8px', marginBottom: '20px', border: '1px solid #ddd' }}>
+              <h4>Add a New Pet</h4>
+              <form onSubmit={handleAddPet} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px' }}>
+                <input type="text" placeholder="Pet Name" value={newPet.name} onChange={e => setNewPet({...newPet, name: e.target.value})} required style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }} />
+                <input type="text" placeholder="Breed" value={newPet.breed} onChange={e => setNewPet({...newPet, breed: e.target.value})} required style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }} />
+                <select value={newPet.type} onChange={e => setNewPet({...newPet, type: e.target.value})} style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }}>
+                  <option value="dog">Dog</option>
+                  <option value="cat">Cat</option>
+                </select>
+                <input type="text" placeholder="Age (e.g. 2 years, 3 months)" value={newPet.age} onChange={e => setNewPet({...newPet, age: e.target.value})} required style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }} />
+                <input type="text" placeholder="Medical / Sickness (e.g. None)" value={newPet.sickness} onChange={e => setNewPet({...newPet, sickness: e.target.value})} required style={{ padding: '8px', border: '1px solid #ccc', borderRadius: '4px' }} />
+                <input type="file" accept=".jpg,.jpeg" onChange={e => setPetImageFile(e.target.files ? e.target.files[0] : null)} style={{ padding: '8px' }} />
+                <div style={{ gridColumn: '1 / -1', display: 'flex', gap: '10px' }}>
+                  <button type="submit" className={styles.btnPrimary} style={{ width: 'auto', margin: 0 }}>Save Pet</button>
+                  <button type="button" onClick={() => setIsAddPetOpen(false)} style={{ background: '#ccc', color: '#333', border: 'none', padding: '10px 15px', borderRadius: '4px', cursor: 'pointer' }}>Cancel</button>
+                </div>
+              </form>
+            </div>
+          )}
+
           <table className={styles.dataTable}>
             <thead>
               <tr>
@@ -259,6 +330,7 @@ export default function AdminDashboard({
                 <th>Pet Name</th>
                 <th>Location</th>
                 <th>Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -267,6 +339,10 @@ export default function AdminDashboard({
                   <td>{pet.pet_name}</td>
                   <td>{pet.location}</td>
                   <td>{pet.status}</td>
+                  <td>
+                    {pet.status !== 'Found' && pet.status !== 'Archived' && <button onClick={() => handleUpdateLostPetStatus(pet.id, 'Found')} style={{ marginRight: '5px', background: '#28a745', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }}>Mark Found</button>}
+                    {pet.status !== 'Archived' && <button onClick={() => handleUpdateLostPetStatus(pet.id, 'Archived')} style={{ background: '#6c757d', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }}>Archive</button>}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -281,6 +357,7 @@ export default function AdminDashboard({
                 <th>Shelter</th>
                 <th>Email</th>
                 <th>Status</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -288,7 +365,12 @@ export default function AdminDashboard({
                 <tr key={s.id}>
                   <td>{s.name}</td>
                   <td>{s.email}</td>
-                  <td>{s.status}</td>
+                  <td><span style={{ padding: '2px 8px', borderRadius: '12px', background: s.status === 'Open' ? '#d4edda' : '#f8d7da', color: s.status === 'Open' ? '#155724' : '#721c24' }}>{s.status}</span></td>
+                  <td>
+                    <button onClick={() => handleToggleShelterStatus(s.id, s.status)} style={{ background: s.status === 'Open' ? '#dc3545' : '#28a745', color: 'white', border: 'none', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }}>
+                      Mark {s.status === 'Open' ? 'Closed' : 'Open'}
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
