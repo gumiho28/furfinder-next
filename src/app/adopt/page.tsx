@@ -96,7 +96,12 @@ export default function AdoptPage() {
         </div>
         
         {selectedPet && (
-          <AdoptionModal pet={selectedPet} onClose={() => setSelectedPet(null)} />
+          <AdoptionModal 
+            isOpen={true} 
+            onClose={() => setSelectedPet(null)} 
+            petId={selectedPet.id.toString()} 
+            petName={selectedPet.name} 
+          />
         )}
     </section>
   );
