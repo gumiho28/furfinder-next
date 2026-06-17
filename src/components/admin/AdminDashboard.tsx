@@ -46,7 +46,7 @@ export default function AdminDashboard({
         setNewPet({ name: '', breed: '', type: 'dog', age: '', sickness: '', image_url: '', status: 'available' });
         setPetImageFile(null);
       } else {
-        alert("Failed to add pet");
+        alert("Failed to add pet: " + (error?.message || "Unknown error"));
       }
     } catch (err) {
       console.error(err);
