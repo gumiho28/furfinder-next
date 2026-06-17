@@ -7,6 +7,7 @@ export default function Home() {
   const [stats, setStats] = useState({ users: 0, adoptions: 0, missing: 0 });
   const [activeTab, setActiveTab] = useState("registration");
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [isMatcherOpen, setIsMatcherOpen] = useState(false);
 
   useEffect(() => {
     async function fetchStats() {
@@ -99,7 +100,7 @@ export default function Home() {
                         <i className="fas fa-exclamation-triangle"></i> Report Lost
                     </button>
                   </Link>
-                  <button className="btn-primary" style={{ background: '#17a2b8', width: 'auto', display: 'inline-block', padding: '12px 30px', fontSize: '1.1rem', boxShadow: '0 4px 6px rgba(0,0,0,0.2)' }}>
+                  <button onClick={() => setIsMatcherOpen(true)} className="btn-primary" style={{ background: '#17a2b8', width: 'auto', display: 'inline-block', padding: '12px 30px', fontSize: '1.1rem', boxShadow: '0 4px 6px rgba(0,0,0,0.2)' }}>
                       <i className="fas fa-magic"></i> Pet Matcher
                   </button>
               </div>
@@ -225,6 +226,46 @@ export default function Home() {
               </ul>
           </div>
       </section>
+
+      {isMatcherOpen && (
+        <div className="modal" style={{ display: 'flex' }}>
+            <div className="modal-content">
+                <span className="close-modal" onClick={() => setIsMatcherOpen(false)}>&times;</span>
+                <h2 style={{ textAlign: 'center', marginBottom: '10px' }}><i className="fas fa-magic"></i> Find Your Perfect Match</h2>
+                <p style={{ textAlign: 'center', marginBottom: '25px', color: '#666' }}>Answer 3 quick questions to find your best friend!</p>
+                <form action="/adopt">
+                    <div className="form-group">
+                        <label>1. How active are you?</label>
+                        <select name="activity" required>
+                            <option value="">Select an option</option>
+                            <option value="high">Very Active (Hiking, Running)</option>
+                            <option value="medium">Moderately Active (Daily Walks)</option>
+                            <option value="low">Low Activity (Couch Potato)</option>
+                        </select>
+                    </div>
+                    <div className="form-group">
+                        <label>2. What is your living space like?</label>
+                        <select name="space" required>
+                            <option value="">Select an option</option>
+                            <option value="house">House with a Yard</option>
+                            <option value="apartment">Apartment / Condo</option>
+                        </select>
+                    </div>
+                    <div className="form-group">
+                        <label>3. What is your experience level?</label>
+                        <select name="experience" required>
+                            <option value="">Select an option</option>
+                            <option value="first_time">First-time Owner</option>
+                            <option value="experienced">Experienced Owner</option>
+                        </select>
+                    </div>
+                    <button type="submit" className="btn-primary" style={{ background: '#17a2b8' }}>
+                        <i className="fas fa-search"></i> Show My Matches!
+                    </button>
+                </form>
+            </div>
+        </div>
+      )}
     </>
   );
 }

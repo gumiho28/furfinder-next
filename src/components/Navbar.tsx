@@ -39,7 +39,7 @@ export default function Navbar() {
         
         {user ? (
           <>
-            {user.email === 'admin@furfinder.com' ? (
+            {user.email === 'shawnrainiellecruz@gmail.com' ? (
               <li><Link href="/admin" className="hover:text-[#003366] bg-[#d4af37] transition font-semibold px-4 py-2 rounded-full">Admin Dashboard</Link></li>
             ) : (
               <li><Link href="/dashboard" className="hover:text-[#003366] bg-[#d4af37] transition font-semibold px-4 py-2 rounded-full">My Dashboard</Link></li>
