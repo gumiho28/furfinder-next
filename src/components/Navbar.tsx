@@ -30,12 +30,12 @@ export default function Navbar() {
       <div className="flex items-center text-xl font-bold gap-2">
         <i className="fas fa-paw text-[#d4af37]"></i> FurFinder
       </div>
-      <ul className="flex gap-4 items-center m-0 p-0" style={{ listStyle: 'none' }}>
-        <li><Link href="/" className="hover:text-[#d4af37] hover:bg-white/10 transition font-semibold px-3 py-2 rounded">Home</Link></li>
-        <li><Link href="/adopt" className="hover:text-[#d4af37] hover:bg-white/10 transition font-semibold px-3 py-2 rounded">Adopt</Link></li>
-        <li><Link href="/lost-and-found" className="hover:text-[#d4af37] hover:bg-white/10 transition font-semibold px-3 py-2 rounded">Lost & Found</Link></li>
-        <li><Link href="/shelters" className="hover:text-[#d4af37] hover:bg-white/10 transition font-semibold px-3 py-2 rounded">Shelters</Link></li>
-        <li><Link href="/donate" className="hover:text-[#d4af37] hover:bg-white/10 transition font-semibold px-3 py-2 rounded">Donate</Link></li>
+      <ul className="flex gap-6 items-center m-0 p-0" style={{ listStyle: 'none' }}>
+        <li><Link href="/" className="text-white hover:text-[#d4af37] transition font-semibold px-2 py-1">Home</Link></li>
+        <li><Link href="/adopt" className="text-white hover:text-[#d4af37] transition font-semibold px-2 py-1">Adopt</Link></li>
+        <li><Link href="/lost-and-found" className="text-white hover:text-[#d4af37] transition font-semibold px-2 py-1">Lost & Found</Link></li>
+        <li><Link href="/shelters" className="text-white hover:text-[#d4af37] transition font-semibold px-2 py-1">Shelters</Link></li>
+        <li><Link href="/donate" className="text-white hover:text-[#d4af37] transition font-semibold px-2 py-1">Donate</Link></li>
         
         {user ? (
           <>
