@@ -1,21 +1,77 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+    --primary-color: #003366; 
+    --accent-color: #d4af37; 
+    --bg-light: #f4f7f6;
+    --text-dark: #333;
+    --white: #ffffff;
+    --success: #28a745;
+    --danger: #dc3545;
+    --transition: all 0.3s ease;
+    --border-color: #ddd;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+body.dark-mode {
+    --primary-color: #82b1ff;
+    --bg-light: #2c2c36;
+    --text-dark: #f5f5f5;
+    --white: #383844;
+    --border-color: #555566;
 }
 
+body.dark-mode nav {
+    background-color: #202028;
+}
 
+body { background-color: var(--bg-light); color: var(--text-dark); line-height: 1.6; padding-bottom: 50px; font-family: 'Open Sans', sans-serif;}
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Basic structural classes from original */
+.container { max-width: 1100px; margin: 2rem auto; padding: 0 20px; }
+h1, h2, h3 { color: var(--primary-color); margin-bottom: 1rem; }
+.section-header { text-align: center; margin-bottom: 2rem; padding-bottom: 1rem; border-bottom: 2px solid #ddd; }
+
+.content-box { background: var(--white); padding: 2rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 3px 6px rgba(0,0,0,0.1); border: 1px solid var(--border-color); }
+
+/* Buttons */
+.btn-primary { display: block; width: 100%; padding: 12px; background-color: var(--primary-color); color: white; border: none; border-radius: 4px; margin-top: 1rem; cursor: pointer; font-weight: 600; transition: 0.2s; text-align: center; }
+.btn-primary:hover { background-color: var(--accent-color); color: var(--primary-color); }
+.btn-secondary { background-color: #e2e6ea; color: #333; border: 1px solid #ccc; padding: 8px 12px; border-radius: 4px; cursor: pointer; margin-left: 5px; font-size: 0.9rem; }
+.btn-secondary:hover { background-color: #dbe0e5; }
+
+/* Pet Grid */
+.pet-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+.pet-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 3px 6px rgba(0,0,0,0.1); transition: var(--transition); position: relative; display: flex; flex-direction: column; border: 1px solid var(--border-color); }
+.pet-card:hover { transform: translateY(-5px); }
+.pet-img { height: 200px; background: #eee; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.pet-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+.pet-card:hover .pet-img img { transform: scale(1.05); }
+.pet-details { padding: 1.5rem; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+.badge-new { position: absolute; top: 10px; right: 10px; background: var(--accent-color); color: var(--primary-color); padding: 4px 10px; border-radius: 20px; font-weight: bold; font-size: 0.8rem; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10; }
+
+/* Lost and Found */
+.lf-layout { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; }
+.report-form { background: white; padding: 1.5rem; border-radius: 8px; box-shadow: 0 3px 6px rgba(0,0,0,0.1); border: 1px solid var(--border-color); }
+.missing-feed { display: flex; flex-direction: column; gap: 15px; }
+.missing-card { background: var(--white); padding: 1rem; border-radius: 8px; border-left: 5px solid var(--danger); display: flex; gap: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); align-items: flex-start; position: relative; border-right: 1px solid var(--border-color); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); }
+.missing-img-container { width: 100px; height: 100px; background: #eee; border-radius: 8px; flex-shrink: 0; overflow: hidden; }
+.missing-img-container img { width: 100%; height: 100%; object-fit: cover; }
+
+/* Shelters */
+.shelter-card { background: var(--white); border-radius: 8px; padding: 2rem; margin-bottom: 2rem; display: flex; gap: 2rem; align-items: flex-start; box-shadow: 0 3px 6px rgba(0,0,0,0.1); border: 1px solid var(--border-color); }
+.shelter-logo img { width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 3px solid var(--primary-color); padding: 2px; }
+.status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; margin-left: 10px; }
+.status-open { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.status-full { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+/* Forms */
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem; color: #555; }
+.form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 4px; font-family: inherit; background: var(--bg-light); color: var(--text-dark); }
+
+@media (max-width: 768px) {
+    .lf-layout { grid-template-columns: 1fr; }
+    .shelter-card { flex-direction: column; align-items: center; text-align: center; }
 }
