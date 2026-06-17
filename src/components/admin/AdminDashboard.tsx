@@ -20,6 +20,7 @@ export default function AdminDashboard({
   const [applications, setApplications] = useState(initialApplications);
   const [lostPets, setLostPets] = useState(initialLostPets);
   const [shelters, setShelters] = useState(initialShelters);
+  const [donations, setDonations] = useState(initialDonations);
   
   // Predictor State
   const [predAge, setPredAge] = useState('');
