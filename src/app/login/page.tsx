@@ -8,7 +8,14 @@ export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  
+  // Registration fields
   const [name, setName] = useState("");
+  const [dogStatus, setDogStatus] = useState("");
+  const [ageGroup, setAgeGroup] = useState("");
+  const [breedPreference, setBreedPreference] = useState("");
+  const [barangay, setBarangay] = useState("");
+  
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -27,18 +34,22 @@ export default function LoginPage() {
         if (error) throw error;
         router.push("/dashboard");
       } else {
-        const { error, data } = await supabase.auth.signUp({
+        const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
             data: {
               full_name: name,
+              dog_status: dogStatus,
+              age_group: ageGroup,
+              breed_preference: breedPreference,
+              barangay: barangay
             }
           }
         });
         if (error) throw error;
         setIsLogin(true);
-        setError("Registration successful! Please check your email to verify or just log in.");
+        setError("Registration Successful! Please check your email or log in.");
       }
     } catch (err: any) {
       setError(err.message || "An error occurred");
@@ -48,75 +59,136 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f4f7f6] dark:bg-[#2c2c36] p-4 text-[#333] dark:text-[#f5f5f5] font-sans">
-      <div className="bg-[#ffffff] dark:bg-[#383844] p-8 rounded-lg shadow-[0_4px_6px_rgba(0,0,0,0.05)] w-full max-w-md border border-[#e1e4e8] dark:border-[#555566]">
-        <h2 className="text-2xl font-bold text-[#003366] dark:text-[#82b1ff] mb-6 text-center">
-          {isLogin ? "Welcome Back" : "Create an Account"}
-        </h2>
-
-        {error && (
-          <div className={`p-3 mb-4 text-sm rounded ${error.includes('successful') ? 'bg-[#d4edda] text-[#155724]' : 'bg-[#f8d7da] text-[#721c24]'}`}>
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {!isLogin && (
-            <div>
-              <label className="block text-sm font-medium mb-1">Full Name</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                className="w-full px-4 py-2 border border-[#e1e4e8] dark:border-[#555566] rounded focus:outline-none focus:ring-2 focus:ring-[#d4af37] bg-transparent"
-              />
-            </div>
-          )}
-          
-          <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 'calc(100vh - 70px)', background: '#f4f7f6', padding: '20px', boxSizing: 'border-box' }}>
+      
+      {isLogin ? (
+        <div style={{ background: 'white', padding: '2rem', borderRadius: '8px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
+          <h2 style={{ color: '#003366', marginBottom: '20px', fontSize: '1.5rem', fontWeight: 'bold' }}>Login</h2>
+          {error && <p style={{ color: error.includes('Successful') ? 'green' : 'red', fontSize: '0.9rem', marginBottom: '10px' }}>{error}</p>}
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
             <input
               type="email"
+              placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-2 border border-[#e1e4e8] dark:border-[#555566] rounded focus:outline-none focus:ring-2 focus:ring-[#d4af37] bg-transparent"
+              style={{ width: '100%', padding: '10px', margin: '8px 0', border: '1px solid #ddd', borderRadius: '4px', boxSizing: 'border-box', fontFamily: 'inherit' }}
             />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Password</label>
             <input
               type="password"
+              placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full px-4 py-2 border border-[#e1e4e8] dark:border-[#555566] rounded focus:outline-none focus:ring-2 focus:ring-[#d4af37] bg-transparent"
+              style={{ width: '100%', padding: '10px', margin: '8px 0', border: '1px solid #ddd', borderRadius: '4px', boxSizing: 'border-box', fontFamily: 'inherit' }}
             />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full py-2 px-4 bg-[#003366] dark:bg-[#82b1ff] text-white dark:text-[#2c2c36] font-semibold rounded hover:opacity-90 transition disabled:opacity-50 mt-4"
+            <button 
+              type="submit" 
+              disabled={loading}
+              onMouseOver={(e) => { e.currentTarget.style.background = '#d4af37'; e.currentTarget.style.color = '#003366'; }}
+              onMouseOut={(e) => { e.currentTarget.style.background = '#003366'; e.currentTarget.style.color = 'white'; }}
+              style={{ width: '100%', padding: '12px', background: '#003366', color: 'white', border: 'none', cursor: 'pointer', borderRadius: '4px', fontWeight: 600, marginTop: '10px', transition: 'background 0.3s' }}
+            >
+              {loading ? 'Logging in...' : 'Login'}
+            </button>
+          </form>
+          <p 
+            onClick={() => { setIsLogin(false); setError(""); }}
+            style={{ marginTop: '15px', fontSize: '0.9rem', color: '#003366', cursor: 'pointer', textDecoration: 'underline' }}
           >
-            {loading ? "Processing..." : isLogin ? "Sign In" : "Sign Up"}
-          </button>
-        </form>
-
-        <div className="mt-6 text-center text-sm">
-          <button
-            onClick={() => {
-              setIsLogin(!isLogin);
-              setError("");
-            }}
-            className="text-[#d4af37] hover:underline font-medium"
-          >
-            {isLogin ? "Don't have an account? Sign up" : "Already have an account? Sign in"}
-          </button>
+            No account? Register here.
+          </p>
         </div>
-      </div>
+      ) : (
+        <div style={{ background: 'white', padding: '2rem', borderRadius: '8px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', width: '100%', maxWidth: '400px', textAlign: 'center' }}>
+          <h2 style={{ color: '#003366', marginBottom: '20px', fontSize: '1.5rem', fontWeight: 'bold' }}>Register</h2>
+          {error && <p style={{ color: 'red', fontSize: '0.9rem', marginBottom: '10px' }}>{error}</p>}
+          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column' }}>
+            <input
+              type="text"
+              placeholder="Full Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              style={{ width: '100%', padding: '10px', margin: '8px 0', border: '1px solid #ddd', borderRadius: '4px', boxSizing: 'border-box', fontFamily: 'inherit' }}
+            />
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              style={{ width: '100%', padding: '10px', margin: '8px 0', border: '1px solid #ddd', borderRadius: '4px', boxSizing: 'border-box', fontFamily: 'inherit' }}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              style={{ width: '100%', padding: '10px', margin: '8px 0', border: '1px solid #ddd', borderRadius: '4px', boxSizing: 'border-box', fontFamily: 'inherit' }}
+            />
+            
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <select 
+                value={dogStatus} 
+                onChange={(e) => setDogStatus(e.target.value)} 
+                required
+                style={{ flex: 1, padding: '10px', margin: '8px 0', border: '1px solid #ddd', borderRadius: '4px', boxSizing: 'border-box', fontFamily: 'inherit' }}
+              >
+                <option value="" disabled>Pet Experience</option>
+                <option value="First-time Owner">First-time Owner</option>
+                <option value="Experienced">Experienced Owner</option>
+              </select>
+              <select 
+                value={ageGroup} 
+                onChange={(e) => setAgeGroup(e.target.value)} 
+                required
+                style={{ flex: 1, padding: '10px', margin: '8px 0', border: '1px solid #ddd', borderRadius: '4px', boxSizing: 'border-box', fontFamily: 'inherit' }}
+              >
+                <option value="" disabled>Age Group</option>
+                <option value="18-25">18-25</option>
+                <option value="26-35">26-35</option>
+                <option value="36-50">36-50</option>
+                <option value="50+">50+</option>
+              </select>
+            </div>
+            
+            <input
+              type="text"
+              placeholder="Breed Preference (e.g., Aspin, Cat)"
+              value={breedPreference}
+              onChange={(e) => setBreedPreference(e.target.value)}
+              required
+              style={{ width: '100%', padding: '10px', margin: '8px 0', border: '1px solid #ddd', borderRadius: '4px', boxSizing: 'border-box', fontFamily: 'inherit' }}
+            />
+            <input
+              type="text"
+              placeholder="Barangay (e.g., Upper Quezon Hill)"
+              value={barangay}
+              onChange={(e) => setBarangay(e.target.value)}
+              required
+              style={{ width: '100%', padding: '10px', margin: '8px 0', border: '1px solid #ddd', borderRadius: '4px', boxSizing: 'border-box', fontFamily: 'inherit' }}
+            />
+            
+            <button 
+              type="submit" 
+              disabled={loading}
+              onMouseOver={(e) => { e.currentTarget.style.background = '#d4af37'; e.currentTarget.style.color = '#003366'; }}
+              onMouseOut={(e) => { e.currentTarget.style.background = '#003366'; e.currentTarget.style.color = 'white'; }}
+              style={{ width: '100%', padding: '12px', background: '#003366', color: 'white', border: 'none', cursor: 'pointer', borderRadius: '4px', fontWeight: 600, margin: '10px 0 0 0', transition: 'background 0.3s' }}
+            >
+              {loading ? 'Registering...' : 'Sign Up'}
+            </button>
+          </form>
+          <p 
+            onClick={() => { setIsLogin(true); setError(""); }}
+            style={{ marginTop: '15px', fontSize: '0.9rem', color: '#003366', cursor: 'pointer', textDecoration: 'underline' }}
+          >
+            Have an account? Login here.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
