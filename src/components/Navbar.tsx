@@ -37,7 +37,11 @@ export default function Navbar() {
         
         {user ? (
           <>
-            <li><Link href="/dashboard" className="hover:text-[#d4af37] transition font-semibold">Dashboard</Link></li>
+            {user.email === 'admin@furfinder.com' ? (
+              <li><Link href="/admin" className="hover:text-[#d4af37] transition font-semibold">Admin Dashboard</Link></li>
+            ) : (
+              <li><Link href="/dashboard" className="hover:text-[#d4af37] transition font-semibold">My Dashboard</Link></li>
+            )}
             <li><button onClick={handleLogout} className="bg-[#d4af37] text-[#003366] px-4 py-2 rounded-full font-semibold hover:opacity-90">Logout</button></li>
           </>
         ) : (
