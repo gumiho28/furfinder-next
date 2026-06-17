@@ -45,10 +45,10 @@ export default function LostAndFoundPage() {
 
     let photoPath = "";
     if (lfPhoto) {
-      const fileName = `${Date.now()}_${lfPhoto.name}`;
+      const fileName = `public/${Date.now()}_${lfPhoto.name}`;
       const { data, error } = await supabase.storage.from("uploads").upload(fileName, lfPhoto);
       if (error) {
-        alert("Error uploading photo.");
+        alert(`Error uploading photo: ${error.message}`);
         return;
       }
       photoPath = supabase.storage.from("uploads").getPublicUrl(fileName).data.publicUrl;
